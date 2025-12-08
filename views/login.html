@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+
+  <body class="bg-gray-900 flex items-center justify-center h-screen">
+    <div class="bg-gray-800 p-8 rounded-xl shadow-lg w-96">
+      <h1 class="text-white text-2xl mb-4">Login</h1>
+
+      <input
+        id="username"
+        placeholder="Username"
+        class="w-full p-2 mb-3 rounded bg-gray-700 text-white"
+      />
+
+      <input
+        id="password"
+        type="password"
+        placeholder="Password"
+        class="w-full p-2 mb-3 rounded bg-gray-700 text-white"
+      />
+
+      <button
+        onclick="login()"
+        class="bg-blue-500 hover:bg-blue-600 text-white py-2 rounded w-full"
+      >
+        Login
+      </button>
+
+      <p id="message" class="text-red-400 mt-4 text-center"></p>
+
+      <p class="text-gray-400 mt-4 text-center">
+        Don't have an account?
+        <a href="/register" class="text-blue-400">Register</a>
+      </p>
+    </div>
+
+    <script>
+      async function login() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        if (!username || !password) {
+          document.getElementById("message").textContent =
+            "Username and password are required";
+          return;
+        }
+
+        try {
+          const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            document.getElementById("message").textContent = data.message;
+            return;
+          }
+
+          // Store token and role
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("role", data.role);
+
+          // Redirect based on role
+          if (data.role === "admin") {
+            window.location.href = "/admin";
+          } else {
+            window.location.href = "/user";
+          }
+        } catch (err) {
+          document.getElementById("message").textContent =
+            "Something went wrong!";
+        }
+      }
+    </script>
+  </body>
+</html>
