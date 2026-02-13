@@ -10,7 +10,7 @@ const path = require("path");
 connectToDB();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 //Middlewares
 app.use(express.json());
